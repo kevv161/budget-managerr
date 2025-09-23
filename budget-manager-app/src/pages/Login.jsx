@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../connect-firebase";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +21,7 @@ export default function Login() {
     setError("");
     
     try {
-      const result = await loginUser(email, password);
+      const result = await login(email, password);
       
       if (result.success) {
         // Login exitoso

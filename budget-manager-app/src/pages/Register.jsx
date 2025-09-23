@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerUser } from '../connect-firebase';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles.css';
 
@@ -11,7 +10,7 @@ function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,8 +24,8 @@ function Register() {
     setError('');
     
     try {
-      // Registrar usuario con Firebase usando la función registerUser
-      const result = await registerUser(email, password, displayName);
+      // Registrar usuario con servicio local
+      const result = await register(email, password, displayName);
       
       if (result.success) {
         console.log('Usuario registrado exitosamente:', result.user);

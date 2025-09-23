@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { auth } from '../connect-firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { getStoredUser, loginUser, registerUser, logoutUser } from '../services/auth';
 
 // Crear el contexto de autenticación
 const AuthContext = createContext();
@@ -16,20 +15,34 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Suscribirse a los cambios de estado de autenticación
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-
-    // Limpiar la suscripción al desmontar
-    return unsubscribe;
+    // Cargar usuario almacenado localmente
+    const stored = getStoredUser();
+    setCurrentUser(stored);
+    setLoading(false);
   }, []);
 
   // Valor del contexto
   const value = {
     currentUser,
-    loading
+    loading,
+    async login(email, password) {
+      const result = await loginUser(email, password);
+      if (result.success) {
+        setCurrentUser(result.user);
+      }
+      return result;
+    },
+    async register(email, password, displayName) {
+      const result = await registerUser(email, password, displayName);
+      if (result.success) {
+        setCurrentUser(result.user);
+      }
+      return result;
+    },
+    async logout() {
+      await logoutUser();
+      setCurrentUser(null);
+    }
   };
 
   return (
