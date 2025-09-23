@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getStoredUser, loginUser, registerUser, logoutUser } from '../services/auth';
+import { auth } from '../Data/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { loginUser, registerUser, logoutUser } from '../Data/firebase';
 
 // Crear el contexto de autenticación
 const AuthContext = createContext();
@@ -15,10 +17,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Cargar usuario almacenado localmente
-    const stored = getStoredUser();
-    setCurrentUser(stored);
-    setLoading(false);
+    // Suscribirse a Firebase Auth
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
   // Valor del contexto
