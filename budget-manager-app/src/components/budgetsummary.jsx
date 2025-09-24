@@ -1,6 +1,5 @@
-const BudgetSummary = ({ budget, expenses, savings }) => {
+const BudgetSummary = ({ budget, expenses, savings, emergencyFund, remaining }) => {
   const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
-  const remaining = budget - totalExpenses;
   const percentSpent = budget > 0 ? (totalExpenses / budget) * 100 : 0;
   
   // Determine status class based on remaining budget
@@ -37,8 +36,14 @@ const BudgetSummary = ({ budget, expenses, savings }) => {
       
       <div className="summary-card savings">
         <h3>Fondo de Emergencia</h3>
-        <p className="amount">Q{savings.toFixed(2)}</p>
+        <p className="amount">Q{emergencyFund.toFixed(2)}</p>
         <p className="info">10% de tu presupuesto guardado para emergencias</p>
+      </div>
+      
+      <div className="summary-card available">
+        <h3>Dinero Disponible</h3>
+        <p className="amount">Q{savings.toFixed(2)}</p>
+        <p className="info">Dinero disponible después del fondo de emergencia</p>
       </div>
     </div>
   );

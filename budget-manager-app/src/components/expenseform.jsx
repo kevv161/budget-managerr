@@ -29,8 +29,7 @@ const ExpenseForm = ({ onExpenseAdd }) => {
     
     onExpenseAdd({
       ...expense,
-      amount,
-      id: Date.now()
+      amount
     });
     
     // Reset form

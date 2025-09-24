@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas para usuarios autenticados
+    match /users/{userId} {
+      // Permitir lectura y escritura solo al propietario del documento
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Reglas para subcolecciones de presupuestos
+      match /budgets/{budgetId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Reglas para subcolecciones de gastos
+      match /expenses/{expenseId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Reglas para colección de prueba (temporal)
+    match /_test/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Denegar acceso a cualquier otra colección
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

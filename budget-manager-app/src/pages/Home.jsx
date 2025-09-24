@@ -1,29 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import BudgetForm from '../components/budgetform.jsx';
 import ExpenseForm from '../components/expenseform.jsx';
 import BudgetSummary from '../components/budgetsummary.jsx';
 import ExpenseList from '../components/expenselist.jsx';
-import useBudget from '../useBudget';
+import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
 
 function Home() {
-  const [showBudgetForm, setShowBudgetForm] = useState(true);
+  const [showBudgetForm, setShowBudgetForm] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
   const {
     budget,
     expenses,
     savings,
+    emergencyFund,
+    remaining,
+    loading,
     budgetSet,
-    handleSetBudget,
-    handleAddExpense,
-    handleDeleteExpense
-  } = useBudget();
+    setBudgetAmount,
+    addExpense,
+    deleteExpense
+  } = useFirestoreBudget();
 
-  const handleBudgetSubmit = (amount) => {
-    handleSetBudget(amount);
-    setShowBudgetForm(false);
+  const handleBudgetSubmit = async (amount) => {
+    try {
+      await setBudgetAmount(amount);
+      setShowBudgetForm(false);
+    } catch (error) {
+      console.error('Error setting budget:', error);
+    }
+  };
+
+  const handleAddExpense = async (expenseData) => {
+    try {
+      await addExpense(expenseData);
+    } catch (error) {
+      console.error('Error adding expense:', error);
+    }
+  };
+
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await deleteExpense(expenseId);
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
   };
 
   const handleLogout = async () => {
@@ -33,6 +56,13 @@ function Home() {
       navigate('/login');
     }
   };
+
+  // Sincronizar estado local con el estado de Firestore
+  useEffect(() => {
+    if (!loading) {
+      setShowBudgetForm(!budgetSet);
+    }
+  }, [budgetSet, loading]);
 
   return (
     <>
@@ -52,15 +82,21 @@ function Home() {
         </header>
 
         <main className="app-main" style={{ paddingTop: '8px' }}>
-        {showBudgetForm ? (
-          <BudgetForm onBudgetSet={handleBudgetSubmit} />
-        ) : (
-          <>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              <p>Cargando datos...</p>
+            </div>
+          ) : (!budgetSet || showBudgetForm) ? (
+            <BudgetForm onBudgetSet={handleBudgetSubmit} />
+          ) : (
+            <>
             <div className="budget-container" style={{ marginBottom: '20px' }}>
               <BudgetSummary 
                 budget={budget} 
                 expenses={expenses} 
-                savings={savings} 
+                savings={savings}
+                emergencyFund={emergencyFund}
+                remaining={remaining}
               />
               <button 
                 className="btn-secondary" 
@@ -81,8 +117,8 @@ function Home() {
                 />
               </div>
             </div>
-          </>
-        )}
+            </>
+          )}
         </main>
 
         <footer className="app-footer" style={{ paddingTop: '24px' }}>
