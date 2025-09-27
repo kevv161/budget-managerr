@@ -1,21 +1,6 @@
-// Category icons and names mapping
-const CATEGORY_CONFIG = {
-  streaming: { icon: '📺', name: 'Streaming' },
-  compras: { icon: '🛒', name: 'Compras' },
-  agua: { icon: '💧', name: 'Agua' },
-  internet: { icon: '🌐', name: 'Internet' },
-  luz: { icon: '⚡', name: 'Electricidad' },
-  otros: { icon: '📝', name: 'Otros' }
-};
+import { getCategoryIcon, getCategoryName } from '../config/categories';
 
 const ExpenseList = ({ expenses, onDeleteExpense }) => {
-  const getCategoryIcon = (category) => {
-    return CATEGORY_CONFIG[category]?.icon || '📝';
-  };
-
-  const getCategoryName = (category) => {
-    return CATEGORY_CONFIG[category]?.name || 'Otros';
-  };
 
   if (expenses.length === 0) {
     return (

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import '../styles.css';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -28,7 +27,6 @@ function Register() {
       const result = await register(email, password, displayName);
       
       if (result.success) {
-        console.log('Usuario registrado exitosamente:', result.user);
         // Redirección a la página principal después del registro exitoso
         navigate('/home');
       } else {

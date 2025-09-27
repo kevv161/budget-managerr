@@ -1,14 +1,5 @@
 import { useState } from 'react';
-
-// Categories configuration
-const CATEGORIES = [
-  { id: 'streaming', name: 'Streaming', isFixed: true },
-  { id: 'compras', name: 'Compras', isFixed: true },
-  { id: 'agua', name: 'Agua', isFixed: true },
-  { id: 'internet', name: 'Internet', isFixed: true },
-  { id: 'luz', name: 'Electricidad/Luz', isFixed: true },
-  { id: 'otros', name: 'Otros', isFixed: false }
-];
+import { CATEGORIES, getCategoryIsFixed } from '../config/categories';
 
 const ExpenseForm = ({ onExpenseAdd }) => {
   const [expense, setExpense] = useState({
@@ -45,11 +36,10 @@ const ExpenseForm = ({ onExpenseAdd }) => {
     const { name, value } = e.target;
     
     if (name === 'category') {
-      const selectedCategory = CATEGORIES.find(cat => cat.id === value);
       setExpense(prev => ({
         ...prev,
         [name]: value,
-        isFixed: selectedCategory ? selectedCategory.isFixed : false
+        isFixed: getCategoryIsFixed(value)
       }));
     } else {
       setExpense(prev => ({

@@ -25,7 +25,6 @@ export default function Login() {
       
       if (result.success) {
         // Login exitoso
-        console.log("Usuario autenticado:", result.user);
         // Redirigir directamente a Home
         navigate('/home');
       } else {

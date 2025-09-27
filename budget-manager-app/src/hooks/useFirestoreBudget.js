@@ -65,11 +65,9 @@ export const useFirestoreBudget = () => {
               const budgetAmount = budgetData.amount || 0;
               setBudget(budgetAmount);
               setBudgetSet(budgetAmount > 0);
-              console.log('📊 Presupuesto cargado:', budgetAmount);
             } else {
               setBudget(0);
               setBudgetSet(false);
-              console.log('📊 No hay presupuesto establecido');
             }
             checkLoadingComplete();
           },
@@ -166,21 +164,6 @@ export const useFirestoreBudget = () => {
     }
   };
 
-  // Actualizar gasto
-  const updateExpense = async (expenseId, expenseData) => {
-    if (!currentUser) return;
-
-    try {
-      await updateDoc(doc(db, 'users', currentUser.uid, 'expenses', expenseId), {
-        ...expenseData,
-        amount: parseFloat(expenseData.amount),
-        updatedAt: new Date()
-      });
-    } catch (error) {
-      console.error('Error updating expense:', error);
-      throw error;
-    }
-  };
 
   // Eliminar gasto
   const deleteExpense = async (expenseId) => {
@@ -218,7 +201,6 @@ export const useFirestoreBudget = () => {
     budgetSet,
     setBudgetAmount,
     addExpense,
-    updateExpense,
     deleteExpense
   };
 };
