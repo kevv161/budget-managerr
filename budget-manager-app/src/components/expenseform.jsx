@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { CATEGORIES, getCategoryIsFixed } from '../config/categories';
+import { CURRENCIES } from '../utils/currencyConverter';
 
-const ExpenseForm = ({ onExpenseAdd }) => {
+const ExpenseForm = ({ onExpenseAdd, selectedCurrency }) => {
   const [expense, setExpense] = useState({
     description: '',
     amount: '',
@@ -71,9 +72,9 @@ const ExpenseForm = ({ onExpenseAdd }) => {
         </div>
         
         <div className="form-group">
-          <label htmlFor="amount">Monto (Q)</label>
+          <label htmlFor="amount">Monto ({CURRENCIES[selectedCurrency]?.symbol || 'Q'})</label>
           <div className="input-group">
-            <span className="currency-symbol">Q</span>
+            <span className="currency-symbol">{CURRENCIES[selectedCurrency]?.symbol || 'Q'}</span>
             <input
               type="number"
               id="amount"

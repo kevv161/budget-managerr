@@ -6,6 +6,7 @@ import ExpenseForm from '../components/expenseform.jsx';
 import BudgetSummary from '../components/budgetsummary.jsx';
 import ExpenseList from '../components/expenselist.jsx';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
+import { useCurrency } from '../hooks/useCurrency';
 import ExportButton from '../components/ExportButton';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -29,6 +30,14 @@ function Home() {
     deleteExpense,
     totalExpenses
   } = useFirestoreBudget();
+
+  const {
+    selectedCurrency,
+    loading: currencyLoading,
+    saveCurrencyPreference,
+    getCurrencyName,
+    CURRENCIES
+  } = useCurrency();
 
   const handleBudgetSubmit = async (amount) => {
     try {
@@ -63,6 +72,11 @@ function Home() {
     }
   };
 
+  const handleCurrencyChange = async (e) => {
+    const newCurrency = e.target.value;
+    await saveCurrencyPreference(newCurrency);
+  };
+
   // Sincronizar estado local con el estado de Firestore
   useEffect(() => {
     if (!loading) {
@@ -83,7 +97,24 @@ function Home() {
           <div className="header-content">
             <div className="header-info">
               <h1>Budget Manager</h1>
-              <p className="currency-tag">Moneda: Quetzales (Q)</p>
+              <div className="currency-selector">
+                <label htmlFor="currency-select" className="currency-label">
+                  Moneda:
+                </label>
+                <select
+                  id="currency-select"
+                  value={selectedCurrency}
+                  onChange={handleCurrencyChange}
+                  className="currency-dropdown"
+                  disabled={currencyLoading}
+                >
+                  {Object.entries(CURRENCIES).map(([code, currency]) => (
+                    <option key={code} value={code}>
+                      {currency.name} ({currency.symbol})
+                    </option>
+                  ))}
+                </select>
+              </div>
               <p className="current-month">
                 Mes actual: {getCurrentMonthName()}
               </p>
@@ -140,6 +171,7 @@ function Home() {
                 savings={savings}
                 emergencyFund={emergencyFund}
                 remaining={remaining}
+                selectedCurrency={selectedCurrency}
               />
               <div className="budget-actions">
                 <button 
@@ -154,12 +186,13 @@ function Home() {
 
             <div className="expenses-container" style={{ gap: '16px' }}>
               <div className="left-panel">
-                <ExpenseForm onExpenseAdd={handleAddExpense} />
+                <ExpenseForm onExpenseAdd={handleAddExpense} selectedCurrency={selectedCurrency} />
               </div>
               <div className="right-panel">
                 <ExpenseList 
                   expenses={expenses} 
-                  onDeleteExpense={handleDeleteExpense} 
+                  onDeleteExpense={handleDeleteExpense}
+                  selectedCurrency={selectedCurrency}
                 />
               </div>
             </div>

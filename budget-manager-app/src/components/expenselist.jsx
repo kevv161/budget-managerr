@@ -1,6 +1,13 @@
 import { getCategoryIcon, getCategoryName } from '../config/categories';
+import { convertCurrency, formatCurrency } from '../utils/currencyConverter';
 
-const ExpenseList = ({ expenses, onDeleteExpense }) => {
+const ExpenseList = ({ expenses, onDeleteExpense, selectedCurrency }) => {
+  // Convert amount to selected currency
+  const formatAmount = (amount) => {
+    if (selectedCurrency === 'GTQ') return `Q${amount.toFixed(2)}`;
+    const convertedAmount = convertCurrency(amount, 'GTQ', selectedCurrency);
+    return formatCurrency(convertedAmount, selectedCurrency);
+  };
 
   if (expenses.length === 0) {
     return (
@@ -38,7 +45,7 @@ const ExpenseList = ({ expenses, onDeleteExpense }) => {
                 </div>
               </div>
               <div className="expense-amount">
-                <span className="amount">Q{expense.amount.toFixed(2)}</span>
+                <span className="amount">{formatAmount(expense.amount)}</span>
               </div>
               <button 
                 className="delete-btn" 

@@ -1,6 +1,6 @@
 // Script para inicializar automáticamente la base de datos de Firestore
 import { db } from '../Data/firebase';
-import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 // Función para inicializar la estructura de datos de un usuario
 export const initializeUserData = async (userId) => {
@@ -56,15 +56,5 @@ export const testFirestoreConnection = async () => {
     }
     
     return false;
-  }
-};
-
-// Función para limpiar datos de prueba (opcional)
-export const cleanupTestData = async () => {
-  try {
-    const testDocRef = doc(db, '_test', 'connection');
-    await deleteDoc(testDocRef);
-  } catch (error) {
-    console.error('❌ Error limpiando datos de prueba:', error);
   }
 };
