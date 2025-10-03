@@ -10,11 +10,6 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fillTestCredentials = () => {
-    setEmail("daniel@gmail.com");
-    setPassword("564321");
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -83,36 +78,6 @@ export default function Login() {
             <p style={{ color: "#666" }}>
               Ingresa tus credenciales para acceder a tu cuenta
             </p>
-            <div style={{ 
-              backgroundColor: "#e6f3ff", 
-              color: "#0066cc", 
-              padding: "10px", 
-              borderRadius: "var(--border-radius)", 
-              fontSize: "0.85rem",
-              textAlign: "center",
-              border: "1px solid #b3d9ff",
-              marginTop: "10px"
-            }}>
-              <strong>Credenciales de prueba:</strong><br />
-              Email: daniel@gmail.com<br />
-              Contraseña: 564321<br />
-              <button 
-                type="button"
-                onClick={fillTestCredentials}
-                style={{
-                  marginTop: "8px",
-                  padding: "4px 12px",
-                  backgroundColor: "#0066cc",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  fontSize: "0.8rem",
-                  cursor: "pointer"
-                }}
-              >
-                Usar credenciales de prueba
-              </button>
-            </div>
             {error && (
               <div style={{ 
                 backgroundColor: "#fee", 

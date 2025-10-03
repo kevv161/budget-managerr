@@ -437,10 +437,281 @@ button:focus-visible {
   color: #c0392b;
 }
 
+/* Home Page Responsive Styles */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.home-header .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.home-header .header-info h1 {
+  margin-bottom: 6px;
+  font-size: 1.8rem;
+}
+
+.home-header .current-month {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin: 4px 0 0 0;
+}
+
+.home-header .header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.budget-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* Form Responsive Styles */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.form-icon {
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+}
+
+/* List Responsive Styles */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.list-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.expense-count {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.expense-item .expense-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  width: 100%;
+}
+
+.expense-item .expense-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.expense-item .expense-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.expense-item .expense-details h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.expense-item .expense-info {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expense-item .expense-amount {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.expense-item .expense-amount .amount {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  background-color: #ffebee;
+  transform: scale(1.1);
+}
+
+/* Export Responsive Styles */
+.export-buttons {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.export-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.export-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.export-info {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.export-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.export-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  flex: 1;
+  max-width: 150px;
+}
+
+.export-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.export-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.export-button .btn-icon {
+  font-size: 1.5rem;
+}
+
+.export-button .btn-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.excel-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.excel-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.word-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.word-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.pdf-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.pdf-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .expenses-container {
     flex-direction: column;
+    gap: 16px;
   }
   
   .left-panel, .right-panel {
@@ -449,5 +720,159 @@ button:focus-visible {
   
   .budget-summary {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .summary-card {
+    padding: 16px;
+  }
+  
+  .card-icon {
+    font-size: 1.5rem;
+    margin-right: 12px;
+  }
+  
+  .card-content .amount {
+    font-size: 1.2rem;
+  }
+  
+  .home-header .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .home-header .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  
+  .budget-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .budget-actions .btn-mobile {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .expense-item .expense-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .expense-item .expense-amount {
+    text-align: left;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .export-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .export-button {
+    max-width: none;
+    flex-direction: row;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+  
+  .export-button .btn-icon {
+    font-size: 1.2rem;
   }
 }
+
+@media (max-width: 480px) {
+  .home-header {
+    padding: 16px;
+  }
+  
+  .home-header .header-info h1 {
+    font-size: 1.5rem;
+  }
+  
+  .summary-card {
+    padding: 12px;
+  }
+  
+  .card-content .amount {
+    font-size: 1.1rem;
+  }
+  
+  .expense-item .expense-main {
+    padding: 10px;
+  }
+  
+  .export-button {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .export-button .btn-icon {
+    font-size: 1rem;
+  }
+}
+
+.export-buttons {
+	display: flex;
+	gap: 10px;
+	margin: 10px 0;
+	flex-wrap: wrap;
+}
+
+.export-button {
+	border: none;
+	padding: 10px 20px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: background-color 0.3s;
+	min-width: 150px;
+}
+
+.excel-button {
+	background-color: #28a745;
+	color: white;
+}
+
+.excel-button:hover:not(:disabled) {
+	background-color: #218838;
+}
+
+.word-button {
+	background-color: #007bff;
+	color: white;
+}
+
+.word-button:hover:not(:disabled) {
+	background-color: #0056b3;
+}
+
+.pdf-button {
+	background-color: #dc3545;
+	color: white;
+}
+
+.pdf-button:hover:not(:disabled) {
+	background-color: #c82333;
+}
+
+.export-button:disabled {
+	background-color: #6c757d;
+	cursor: not-allowed;
+}
+
+

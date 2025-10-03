@@ -10,10 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
+    "docx": "^9.5.1",
+    "file": "^0.2.2",
+    "file-saver": "^2.0.5",
     "firebase": "^12.3.0",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
+    "ldrs": "^1.1.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.1"
+    "react-router-dom": "^7.9.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

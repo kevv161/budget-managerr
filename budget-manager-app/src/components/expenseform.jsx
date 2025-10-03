@@ -51,8 +51,11 @@ const ExpenseForm = ({ onExpenseAdd }) => {
 
   return (
     <div className="expense-form-container">
-      <h2>Agregar Gasto</h2>
-      <form onSubmit={handleSubmit}>
+      <div className="form-header">
+        <h2>Agregar Gasto</h2>
+        <div className="form-icon">➕</div>
+      </div>
+      <form onSubmit={handleSubmit} className="expense-form">
         <div className="form-group">
           <label htmlFor="description">Descripción</label>
           <input
@@ -63,6 +66,7 @@ const ExpenseForm = ({ onExpenseAdd }) => {
             onChange={handleChange}
             placeholder="Descripción del gasto"
             required
+            className="form-input"
           />
         </div>
         
@@ -80,6 +84,7 @@ const ExpenseForm = ({ onExpenseAdd }) => {
               step="0.01"
               min="0.01"
               required
+              className="form-input"
             />
           </div>
         </div>
@@ -92,6 +97,7 @@ const ExpenseForm = ({ onExpenseAdd }) => {
             value={expense.category}
             onChange={handleChange}
             required
+            className="form-select"
           >
             {CATEGORIES.map(category => (
               <option key={category.id} value={category.id}>
@@ -115,7 +121,10 @@ const ExpenseForm = ({ onExpenseAdd }) => {
           </div>
         </div>
         
-        <button type="submit" className="btn-primary">Agregar Gasto</button>
+        <button type="submit" className="btn-primary form-submit">
+          <span className="btn-text">Agregar Gasto</span>
+          <span className="btn-icon">💾</span>
+        </button>
       </form>
     </div>
   );

@@ -7,11 +7,13 @@ import {
   addDoc, 
   updateDoc, 
   deleteDoc,
-  getDocs
+  getDocs,
+  orderBy
 } from 'firebase/firestore';
 import { db } from '../Data/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { initializeUserData, testFirestoreConnection } from '../utils/initFirestore';
+
 
 export const useFirestoreBudget = () => {
   const [budget, setBudget] = useState(0);
@@ -19,6 +21,7 @@ export const useFirestoreBudget = () => {
   const [loading, setLoading] = useState(true);
   const [budgetSet, setBudgetSet] = useState(false);
   const { currentUser } = useAuth();
+
 
   // Escuchar cambios en el presupuesto y gastos del usuario
   useEffect(() => {
@@ -81,7 +84,8 @@ export const useFirestoreBudget = () => {
 
         // Escuchar cambios en los gastos
         const expensesQuery = query(
-          collection(db, 'users', currentUser.uid, 'expenses')
+          collection(db, 'users', currentUser.uid, 'expenses'),
+          orderBy('createdAt', 'desc')
         );
 
         expensesUnsubscribe = onSnapshot(
@@ -164,7 +168,6 @@ export const useFirestoreBudget = () => {
     }
   };
 
-
   // Eliminar gasto
   const deleteExpense = async (expenseId) => {
     if (!currentUser) return;
@@ -176,6 +179,7 @@ export const useFirestoreBudget = () => {
       throw error;
     }
   };
+
 
   // Calcular total de gastos
   const totalExpenses = expenses.reduce((total, expense) => total + (expense.amount || 0), 0);
@@ -189,6 +193,7 @@ export const useFirestoreBudget = () => {
   // Calcular ahorros: si el restante es mayor al fondo de emergencia, 
   // los ahorros son la diferencia. Si no, los ahorros son 0.
   const savings = remaining > emergencyFund ? remaining - emergencyFund : 0;
+
 
   return {
     budget,

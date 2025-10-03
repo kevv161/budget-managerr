@@ -6,6 +6,11 @@ import ExpenseForm from '../components/expenseform.jsx';
 import BudgetSummary from '../components/budgetsummary.jsx';
 import ExpenseList from '../components/expenselist.jsx';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
+import ExportButton from '../components/ExportButton';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { DotSpinner } from 'ldrs/react'
+import 'ldrs/react/DotSpinner.css'
 
 function Home() {
   const [showBudgetForm, setShowBudgetForm] = useState(false);
@@ -21,7 +26,8 @@ function Home() {
     budgetSet,
     setBudgetAmount,
     addExpense,
-    deleteExpense
+    deleteExpense,
+    totalExpenses
   } = useFirestoreBudget();
 
   const handleBudgetSubmit = async (amount) => {
@@ -64,30 +70,67 @@ function Home() {
     }
   }, [budgetSet, loading]);
 
+  const getCurrentMonthName = () => {
+    // Usar siempre la fecha actual real para mostrar
+    const now = new Date();
+    return format(now, 'MMMM yyyy', { locale: es });
+  };
+
   return (
     <>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '20px 16px' }}>
-        <header className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <div>
-            <h1 style={{ marginBottom: '6px' }}>Budget Manager</h1>
-            <p className="currency-tag">Moneda: Quetzales (Q)</p>
+        <header className="app-header home-header">
+          <div className="header-content">
+            <div className="header-info">
+              <h1>Budget Manager</h1>
+              <p className="currency-tag">Moneda: Quetzales (Q)</p>
+              <p className="current-month">
+                Mes actual: {getCurrentMonthName()}
+              </p>
+            </div>
+            <div className="header-actions">
+              <button 
+                className="btn-secondary btn-mobile" 
+                onClick={handleLogout}
+              >
+                <span className="btn-text">Cerrar sesión</span>
+                <span className="btn-icon">🚪</span>
+              </button>
+            </div>
           </div>
-          <button 
-            className="btn-secondary" 
-            onClick={handleLogout}
-            style={{ whiteSpace: 'nowrap' }}
-          >
-            Cerrar sesión
-          </button>
         </header>
 
         <main className="app-main" style={{ paddingTop: '8px' }}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>
+              <DotSpinner
+                  size="40"
+                  speed="0.9"
+                  color="black" 
+                />
               <p>Cargando datos...</p>
             </div>
           ) : (!budgetSet || showBudgetForm) ? (
-            <BudgetForm onBudgetSet={handleBudgetSubmit} />
+            <div>
+              <div style={{ 
+                backgroundColor: '#fff3cd', 
+                border: '1px solid #ffeaa7', 
+                borderRadius: '8px', 
+                padding: '16px', 
+                marginBottom: '20px' 
+              }}>
+                <h3 style={{ margin: '0 0 8px 0', color: '#856404' }}>
+                  {budgetSet ? 'Cambiar Presupuesto' : 'Establecer Presupuesto'}
+                </h3>
+                <p style={{ margin: '0 0 12px 0', color: '#856404' }}>
+                  {budgetSet 
+                    ? 'Estás cambiando el presupuesto actual.' 
+                    : 'Establece tu presupuesto para comenzar a controlar tus gastos.'
+                  }
+                </p>
+              </div>
+              <BudgetForm onBudgetSet={handleBudgetSubmit} />
+            </div>
           ) : (
             <>
             <div className="budget-container" style={{ marginBottom: '20px' }}>
@@ -98,12 +141,15 @@ function Home() {
                 emergencyFund={emergencyFund}
                 remaining={remaining}
               />
-              <button 
-                className="btn-secondary" 
-                onClick={() => setShowBudgetForm(true)}
-              >
-                Cambiar Presupuesto
-              </button>
+              <div className="budget-actions">
+                <button 
+                  className="btn-secondary btn-mobile" 
+                  onClick={() => setShowBudgetForm(true)}
+                >
+                  <span className="btn-text">Cambiar Presupuesto</span>
+                  <span className="btn-icon">💰</span>
+                </button>
+              </div>
             </div>
 
             <div className="expenses-container" style={{ gap: '16px' }}>
@@ -117,6 +163,7 @@ function Home() {
                 />
               </div>
             </div>
+            <ExportButton />
             </>
           )}
         </main>
