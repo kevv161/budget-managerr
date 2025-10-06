@@ -17,19 +17,8 @@ export const initializeUserData = async (userId) => {
       });
     }
 
-    // Crear subcolecciones si no existen
-    const budgetRef = doc(db, 'users', userId, 'budgets', 'default');
-    const budgetDoc = await getDoc(budgetRef);
-    
-    if (!budgetDoc.exists()) {
-      await setDoc(budgetRef, {
-        amount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-    }
-
-    // La colección de gastos se creará automáticamente cuando se agregue el primer gasto
+    // Las subcolecciones de presupuestos y gastos se crearán automáticamente 
+    // cuando el usuario establezca su primer presupuesto o agregue su primer gasto
     
   } catch (error) {
     console.error('❌ Error inicializando datos de usuario:', error);

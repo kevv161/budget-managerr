@@ -177,9 +177,17 @@ function Home() {
                 <button 
                   className="btn-secondary btn-mobile" 
                   onClick={() => setShowBudgetForm(true)}
+                  style={{ marginRight: '8px' }}
                 >
                   <span className="btn-text">Cambiar Presupuesto</span>
                   <span className="btn-icon">💰</span>
+                </button>
+                <button 
+                  className="btn-secondary btn-mobile" 
+                  onClick={() => navigate('/budget-history')}
+                >
+                  <span className="btn-text">Historial</span>
+                  <span className="btn-icon">📊</span>
                 </button>
               </div>
             </div>

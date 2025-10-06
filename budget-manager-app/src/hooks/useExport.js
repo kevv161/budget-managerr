@@ -4,9 +4,19 @@ import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from './useCurrency';
+import { convertCurrency, formatCurrency, CURRENCIES } from '../utils/currencyConverter';
 
 export const useExport = () => {
 	const { currentUser } = useAuth();
+	const { selectedCurrency, convertAmount, getCurrencySymbol, getCurrencyName } = useCurrency();
+
+	// Función para formatear montos con la moneda preferida
+	const formatAmount = (amount) => {
+		const convertedAmount = convertAmount(amount);
+		const symbol = getCurrencySymbol();
+		return `${symbol}${convertedAmount.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+	};
 
 	const exportToExcel = (budget, expenses, totalExpenses, savings, emergencyFund, remaining) => {
 		if (!currentUser) {
@@ -23,13 +33,14 @@ export const useExport = () => {
 				['Información del Usuario'],
 				['Email:', currentUser.email],
 				['Fecha de Exportación:', new Date().toLocaleDateString('es-ES')],
+				['Moneda de Exportación:', getCurrencyName()],
 				[''],
 				['Resumen Financiero'],
-				['Presupuesto Total:', budget],
-				['Total de Gastos:', totalExpenses],
-				['Fondo de Emergencia (10%):', emergencyFund],
-				['Ahorros:', savings],
-				['Presupuesto Restante:', remaining]
+				['Presupuesto Total:', formatAmount(budget)],
+				['Total de Gastos:', formatAmount(totalExpenses)],
+				['Fondo de Emergencia (10%):', formatAmount(emergencyFund)],
+				['Ahorros:', formatAmount(savings)],
+				['Presupuesto Restante:', formatAmount(remaining)]
 			];
 
 			const userSheet = XLSX.utils.aoa_to_sheet(userData);
@@ -44,7 +55,7 @@ export const useExport = () => {
 				expenses.forEach(expense => {
 					expensesData.push([
 						expense.description,
-						expense.amount,
+						formatAmount(expense.amount),
 						expense.category,
 						expense.isFixed ? 'Sí' : 'No',
 						expense.createdAt ? new Date(expense.createdAt.seconds * 1000).toLocaleDateString('es-ES') : 'N/A'
@@ -144,6 +155,22 @@ export const useExport = () => {
 									width: { size: 70, type: WidthType.PERCENTAGE }
 								})
 							]
+						}),
+						new TableRow({
+							children: [
+								new TableCell({
+									children: [new Paragraph({
+										children: [new TextRun({ text: "Moneda de Exportación:", bold: true })]
+									})],
+									width: { size: 30, type: WidthType.PERCENTAGE }
+								}),
+								new TableCell({
+									children: [new Paragraph({
+										children: [new TextRun({ text: getCurrencyName() })]
+									})],
+									width: { size: 70, type: WidthType.PERCENTAGE }
+								})
+							]
 						})
 					]
 				}),
@@ -185,7 +212,7 @@ export const useExport = () => {
 								new TableCell({
 									children: [new Paragraph({
 										children: [new TextRun({ 
-											text: `$${budget.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+											text: formatAmount(budget),
 											bold: true,
 											color: "366092"
 										})]
@@ -205,7 +232,7 @@ export const useExport = () => {
 								new TableCell({
 									children: [new Paragraph({
 										children: [new TextRun({ 
-											text: `$${totalExpenses.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+											text: formatAmount(totalExpenses),
 											bold: true,
 											color: "D32F2F"
 										})]
@@ -225,7 +252,7 @@ export const useExport = () => {
 								new TableCell({
 									children: [new Paragraph({
 										children: [new TextRun({ 
-											text: `$${emergencyFund.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+											text: formatAmount(emergencyFund),
 											bold: true,
 											color: "FF9800"
 										})]
@@ -245,7 +272,7 @@ export const useExport = () => {
 								new TableCell({
 									children: [new Paragraph({
 										children: [new TextRun({ 
-											text: `$${savings.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+											text: formatAmount(savings),
 											bold: true,
 											color: "4CAF50"
 										})]
@@ -265,7 +292,7 @@ export const useExport = () => {
 								new TableCell({
 									children: [new Paragraph({
 										children: [new TextRun({ 
-											text: `$${remaining.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+											text: formatAmount(remaining),
 											bold: true,
 											color: remaining >= 0 ? "4CAF50" : "D32F2F"
 										})]
@@ -361,7 +388,7 @@ export const useExport = () => {
 								new TableCell({
 									children: [new Paragraph({
 										children: [new TextRun({ 
-											text: `$${expense.amount.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+											text: formatAmount(expense.amount),
 											bold: true
 										})]
 									})],
@@ -469,7 +496,8 @@ export const useExport = () => {
 				head: [['Campo', 'Valor']],
 				body: [
 					['Email', currentUser.email],
-					['Fecha de Exportación', new Date().toLocaleDateString('es-ES')]
+					['Fecha de Exportación', new Date().toLocaleDateString('es-ES')],
+					['Moneda de Exportación', getCurrencyName()]
 				],
 				theme: 'grid',
 				headStyles: {
@@ -494,11 +522,11 @@ export const useExport = () => {
 
 			// Tabla de resumen financiero
 			const summaryData = [
-				['Presupuesto Total', `$${budget.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`],
-				['Total de Gastos', `$${totalExpenses.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`],
-				['Fondo de Emergencia (10%)', `$${emergencyFund.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`],
-				['Ahorros', `$${savings.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`],
-				['Presupuesto Restante', `$${remaining.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`]
+				['Presupuesto Total', formatAmount(budget)],
+				['Total de Gastos', formatAmount(totalExpenses)],
+				['Fondo de Emergencia (10%)', formatAmount(emergencyFund)],
+				['Ahorros', formatAmount(savings)],
+				['Presupuesto Restante', formatAmount(remaining)]
 			];
 
 			autoTable(doc, {
@@ -530,7 +558,7 @@ export const useExport = () => {
 				// Preparar datos de gastos
 				const expensesData = expenses.map(expense => [
 					expense.description,
-					`$${expense.amount.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`,
+					formatAmount(expense.amount),
 					expense.category,
 					expense.isFixed ? 'Sí' : 'No',
 					expense.createdAt ? new Date(expense.createdAt.seconds * 1000).toLocaleDateString('es-ES') : 'N/A'

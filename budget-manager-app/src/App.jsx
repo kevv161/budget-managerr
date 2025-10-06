@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import BudgetHistory from './pages/BudgetHistory';
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -41,6 +42,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Home />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/budget-history" 
+        element={
+          <ProtectedRoute>
+            <BudgetHistory />
           </ProtectedRoute>
         } 
       />

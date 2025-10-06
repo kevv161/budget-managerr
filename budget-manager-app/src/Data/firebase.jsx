@@ -9,7 +9,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAwwE1WRm6oG59gzvtvwK-sVakILMnoiPM",
   authDomain: "budget-managementt.firebaseapp.com",
   projectId: "budget-managementt",
-  storageBucket: "budget-managementt.firebasestorage.app",
+  storageBucket: "budget-managementt.appspot.com",
   messagingSenderId: "1034951770285",
   appId: "1:1034951770285:web:6662e28b5120f9762e8624"
 };
