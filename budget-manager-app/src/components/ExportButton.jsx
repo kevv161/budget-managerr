@@ -1,8 +1,8 @@
 import { useExport } from '../hooks/useExport';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
 
-const ExportButton = () => {
-	const { exportToExcel, exportToWord, exportToPDF } = useExport();
+const ExportButton = ({ selectedCurrency }) => {
+	const { exportToExcel, exportToWord, exportToPDF } = useExport(selectedCurrency);
 	const { budget, expenses, totalExpenses, savings, emergencyFund, remaining } = useFirestoreBudget();
 
 	const handleExportExcel = () => {

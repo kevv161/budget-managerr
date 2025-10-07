@@ -173,11 +173,13 @@ function Home() {
                 remaining={remaining}
                 selectedCurrency={selectedCurrency}
               />
+            </div>
+
+            <div className="actions-container">
               <div className="budget-actions">
                 <button 
                   className="btn-secondary btn-mobile" 
                   onClick={() => setShowBudgetForm(true)}
-                  style={{ marginRight: '8px' }}
                 >
                   <span className="btn-text">Cambiar Presupuesto</span>
                   <span className="btn-icon">💰</span>
@@ -190,6 +192,7 @@ function Home() {
                   <span className="btn-icon">📊</span>
                 </button>
               </div>
+              <ExportButton selectedCurrency={selectedCurrency} />
             </div>
 
             <div className="expenses-container" style={{ gap: '16px' }}>
@@ -204,7 +207,6 @@ function Home() {
                 />
               </div>
             </div>
-            <ExportButton />
             </>
           )}
         </main>

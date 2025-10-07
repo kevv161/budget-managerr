@@ -67,14 +67,6 @@ const BudgetSummary = ({ budget, expenses, savings, emergencyFund, remaining, se
         </div>
       </div>
       
-      <div className="summary-card available">
-        <div className="card-icon">💎</div>
-        <div className="card-content">
-          <h3>Dinero Disponible</h3>
-          <p className="amount">{formatAmount(savings)}</p>
-          <p className="info">Dinero disponible después del fondo de emergencia</p>
-        </div>
-      </div>
     </div>
   );
 };

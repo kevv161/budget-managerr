@@ -7,14 +7,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCurrency } from './useCurrency';
 import { convertCurrency, formatCurrency, CURRENCIES } from '../utils/currencyConverter';
 
-export const useExport = () => {
+export const useExport = (selectedCurrency) => {
 	const { currentUser } = useAuth();
-	const { selectedCurrency, convertAmount, getCurrencySymbol, getCurrencyName } = useCurrency();
+	const { convertAmount, getCurrencySymbol, getCurrencyName } = useCurrency();
 
 	// Función para formatear montos con la moneda preferida
 	const formatAmount = (amount) => {
-		const convertedAmount = convertAmount(amount);
-		const symbol = getCurrencySymbol();
+		// Usar la moneda pasada como parámetro o la del hook como fallback
+		const currency = selectedCurrency || 'GTQ';
+		const convertedAmount = currency === 'GTQ' ? amount : convertCurrency(amount, 'GTQ', currency);
+		const symbol = CURRENCIES[currency]?.symbol || 'Q';
 		return `${symbol}${convertedAmount.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
 	};
 
@@ -33,7 +35,7 @@ export const useExport = () => {
 				['Información del Usuario'],
 				['Email:', currentUser.email],
 				['Fecha de Exportación:', new Date().toLocaleDateString('es-ES')],
-				['Moneda de Exportación:', getCurrencyName()],
+				['Moneda de Exportación:', CURRENCIES[selectedCurrency || 'GTQ']?.name || 'Quetzales'],
 				[''],
 				['Resumen Financiero'],
 				['Presupuesto Total:', formatAmount(budget)],
@@ -166,7 +168,7 @@ export const useExport = () => {
 								}),
 								new TableCell({
 									children: [new Paragraph({
-										children: [new TextRun({ text: getCurrencyName() })]
+										children: [new TextRun({ text: CURRENCIES[selectedCurrency || 'GTQ']?.name || 'Quetzales' })]
 									})],
 									width: { size: 70, type: WidthType.PERCENTAGE }
 								})
@@ -497,7 +499,7 @@ export const useExport = () => {
 				body: [
 					['Email', currentUser.email],
 					['Fecha de Exportación', new Date().toLocaleDateString('es-ES')],
-					['Moneda de Exportación', getCurrencyName()]
+					['Moneda de Exportación', CURRENCIES[selectedCurrency || 'GTQ']?.name || 'Quetzales']
 				],
 				theme: 'grid',
 				headStyles: {
