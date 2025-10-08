@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
 import { useCurrency } from '../hooks/useCurrency';
-import { format, parseISO } from 'date-fns';
+import { useExport } from '../hooks/useExport';
+import { format, parseISO, isAfter, startOfMonth, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { DotSpinner } from 'ldrs/react'
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 import 'ldrs/react/DotSpinner.css'
 
 function BudgetHistory() {
@@ -24,10 +26,35 @@ function BudgetHistory() {
 		getCurrencyName
 	} = useCurrency();
 
+	const { exportToPDF } = useExport(selectedCurrency);
+
 	const [filteredBudgets, setFilteredBudgets] = useState([]);
 	const [selectedMonth, setSelectedMonth] = useState('');
 	const [editingBudget, setEditingBudget] = useState(null);
 	const [editAmount, setEditAmount] = useState('');
+	const [simulatedCurrentMonth, setSimulatedCurrentMonth] = useState(null);
+	const [showCharts, setShowCharts] = useState(false);
+
+	// Construir dataset para comparativa mensual (Presupuesto vs Gastos)
+	const buildMonthlyComparisonData = () => {
+		// Tomamos meses únicos a partir de presupuestos
+		const months = budgets
+			.map(b => b.monthKey)
+			.filter((value, index, self) => self.indexOf(value) === index)
+			.sort();
+
+		return months.map(monthKey => {
+			const monthBudget = budgets.find(b => b.monthKey === monthKey);
+			const monthExpenses = getExpensesForMonth(monthKey);
+			const totalExpenses = monthExpenses.reduce((acc, e) => acc + (e.amount || 0), 0);
+			return {
+				monthKey,
+				mes: format(parseISO(monthKey + '-01'), 'MMM yyyy', { locale: es }),
+				presupuesto: monthBudget ? monthBudget.amount : 0,
+				gasto: totalExpenses
+			};
+		});
+	};
 
 	// Filtrar presupuestos por mes seleccionado
 	useEffect(() => {
@@ -71,6 +98,24 @@ function BudgetHistory() {
 		return months.sort();
 	};
 
+	// Determinar si un presupuesto puede ser exportado (cuando el mes haya terminado)
+	const canExportBudget = (budgetMonthKey) => {
+		// Usar el mes simulado si está disponible, sino usar el mes actual real
+		const currentMonth = simulatedCurrentMonth || format(new Date(), 'yyyy-MM');
+		const budgetDate = parseISO(budgetMonthKey + '-01');
+		
+		// El presupuesto puede ser exportado si el mes actual es posterior al mes del presupuesto
+		const monthHasEnded = isAfter(parseISO(currentMonth + '-01'), budgetDate);
+		
+		// Considerar el ciclo de 4 meses para reposición de presupuestos
+		// Los presupuestos se reponen cada 4 meses, así que solo permitir exportación
+		// si el presupuesto no ha sido "reemplazado" por un nuevo ciclo
+		const monthsDifference = Math.floor((parseISO(currentMonth + '-01').getTime() - budgetDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
+		const withinFourMonthCycle = monthsDifference < 4;
+		
+		return monthHasEnded && withinFourMonthCycle;
+	};
+
 	const handleLogout = async () => {
 		try {
 			await logout();
@@ -80,6 +125,10 @@ function BudgetHistory() {
 	};
 
 	const getCurrentMonthName = () => {
+		if (simulatedCurrentMonth) {
+			const simulatedDate = parseISO(simulatedCurrentMonth + '-01');
+			return format(simulatedDate, 'MMMM yyyy', { locale: es }) + ' (Simulado)';
+		}
 		const now = new Date();
 		return format(now, 'MMMM yyyy', { locale: es });
 	};
@@ -133,6 +182,53 @@ function BudgetHistory() {
 		}
 	};
 
+	// Función para exportar un presupuesto específico a PDF
+	const handleExportBudgetPDF = (budget) => {
+		const monthExpenses = getExpensesForMonth(budget.monthKey);
+		const stats = calculateBudgetStats(budget);
+		
+		exportToPDF(
+			budget.amount,
+			monthExpenses,
+			stats.totalExpenses,
+			stats.savings,
+			stats.emergencyFund,
+			stats.remaining
+		);
+	};
+
+	// Función para simular el cambio de mes
+	const handleSimulateMonth = (monthKey) => {
+		setSimulatedCurrentMonth(monthKey);
+	};
+
+	// Función para resetear la simulación
+	const handleResetSimulation = () => {
+		setSimulatedCurrentMonth(null);
+	};
+
+	// Obtener opciones de meses para simulación
+	const getSimulationOptions = () => {
+		const currentDate = new Date();
+		const currentMonth = format(currentDate, 'yyyy-MM');
+		const options = [];
+		
+		// Agregar el mes actual
+		options.push({ value: currentMonth, label: format(parseISO(currentMonth + '-01'), 'MMMM yyyy', { locale: es }) + ' (Actual)' });
+		
+		// Agregar los próximos 6 meses para simulación
+		for (let i = 1; i <= 6; i++) {
+			const futureDate = addMonths(parseISO(currentMonth + '-01'), i);
+			const futureMonth = format(futureDate, 'yyyy-MM');
+			options.push({ 
+				value: futureMonth, 
+				label: format(futureDate, 'MMMM yyyy', { locale: es }) + ' (Simulado)' 
+			});
+		}
+		
+		return options;
+	};
+
 	if (loading) {
 		return (
 			<div style={{ textAlign: 'center', padding: '40px' }}>
@@ -178,23 +274,7 @@ function BudgetHistory() {
 				</header>
 
 				<main className="app-main" style={{ paddingTop: '8px' }}>
-					{/* Información sobre edición */}
-					<div style={{ 
-						backgroundColor: '#e8f5e8', 
-						border: '1px solid #4caf50', 
-						borderRadius: '8px', 
-						padding: '12px', 
-						marginBottom: '20px' 
-					}}>
-						<h4 style={{ margin: '0 0 8px 0', color: '#2e7d32' }}>
-							✏️ Edición Individual de Presupuestos
-						</h4>
-						<p style={{ margin: '0', color: '#2e7d32', fontSize: '14px' }}>
-							Puedes modificar el presupuesto de cualquier mes individualmente usando el botón "Editar" en cada tarjeta. 
-							Esto te permite ajustar presupuestos específicos sin afectar los demás meses.
-						</p>
-					</div>
-
+					{/* Información sobre edición y exportación */}
 					{/* Filtro por mes */}
 					<div style={{ marginBottom: '20px' }}>
 						<label htmlFor="month-filter" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
@@ -219,6 +299,100 @@ function BudgetHistory() {
 								</option>
 							))}
 						</select>
+						<button
+							onClick={() => setShowCharts(prev => !prev)}
+							style={{
+								marginLeft: '12px',
+								backgroundColor: showCharts ? '#6c757d' : '#2196f3',
+								color: 'white',
+								border: 'none',
+								padding: '8px 12px',
+								borderRadius: '4px',
+								fontSize: '14px',
+								cursor: 'pointer'
+							}}
+						>
+							{showCharts ? 'Ocultar gráficas' : 'Mostrar gráficas'}
+						</button>
+					</div>
+
+					{/* Comparativa de gráficas: Presupuesto vs Gastos por mes */}
+					{showCharts && (
+						<div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+							<h3 style={{ margin: '0 0 12px 0' }}>Comparativa mensual: Presupuesto vs Gastos</h3>
+							<div style={{ width: '100%', height: 360 }}>
+								<ResponsiveContainer width="100%" height="100%">
+									<BarChart
+										data={(selectedMonth ? buildMonthlyComparisonData().filter(d => d.monthKey === selectedMonth) : buildMonthlyComparisonData())}
+										margin={{ top: 16, right: 24, left: 8, bottom: 8 }}
+									>
+										<CartesianGrid strokeDasharray="3 3" />
+										<XAxis dataKey="mes" />
+										<YAxis />
+										<Tooltip formatter={(value) => [`${getCurrencyName(selectedCurrency)} ${Number(value).toLocaleString()}`, '']} />
+										<Legend />
+										<Bar dataKey="presupuesto" name="Presupuesto" fill="#8884d8" />
+										<Bar dataKey="gasto" name="Gasto" fill="#82ca9d" />
+									</BarChart>
+								</ResponsiveContainer>
+							</div>
+						</div>
+					)}
+
+					{/* Simulación de mes para pruebas */}
+					<div style={{ 
+						backgroundColor: '#fff3cd', 
+						border: '1px solid #ffeaa7', 
+						borderRadius: '8px', 
+						padding: '16px', 
+						marginBottom: '20px' 
+					}}>
+						<h4 style={{ margin: '0 0 12px 0', color: '#856404' }}>
+							🧪 Simulación de Mes (Para Pruebas)
+						</h4>
+						<div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+							<label htmlFor="simulation-month" style={{ fontWeight: 'bold', color: '#856404' }}>
+								Simular mes actual:
+							</label>
+							<select
+								id="simulation-month"
+								value={simulatedCurrentMonth || ''}
+								onChange={(e) => handleSimulateMonth(e.target.value || null)}
+								style={{
+									padding: '6px 10px',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+									fontSize: '14px',
+									minWidth: '180px'
+								}}
+							>
+								<option value="">Mes real actual</option>
+								{getSimulationOptions().map(option => (
+									<option key={option.value} value={option.value}>
+										{option.label}
+									</option>
+								))}
+							</select>
+							{simulatedCurrentMonth && (
+								<button
+									onClick={handleResetSimulation}
+									style={{
+										backgroundColor: '#6c757d',
+										color: 'white',
+										border: 'none',
+										padding: '6px 12px',
+										borderRadius: '4px',
+										fontSize: '12px',
+										cursor: 'pointer'
+									}}
+								>
+									Resetear
+								</button>
+							)}
+						</div>
+						<p style={{ margin: '8px 0 0 0', color: '#856404', fontSize: '12px' }}>
+							Usa esta herramienta para simular diferentes meses y probar cuándo aparecen los botones de exportación PDF.
+						</p>
 					</div>
 
 					{/* Lista de presupuestos */}
@@ -329,6 +503,27 @@ function BudgetHistory() {
 													>
 														<span>✏️</span>
 														<span>Editar</span>
+													</button>
+												)}
+												{canExportBudget(budget.monthKey) && (
+													<button
+														onClick={() => handleExportBudgetPDF(budget)}
+														style={{
+															backgroundColor: '#f44336',
+															color: 'white',
+															border: 'none',
+															padding: '6px 12px',
+															borderRadius: '4px',
+															fontSize: '12px',
+															cursor: 'pointer',
+															display: 'flex',
+															alignItems: 'center',
+															gap: '4px'
+														}}
+														title={`Exportar presupuesto de ${formatMonthName(budget.monthKey)} a PDF`}
+													>
+														<span>📋</span>
+														<span>Exportar PDF</span>
 													</button>
 												)}
 												<div style={{

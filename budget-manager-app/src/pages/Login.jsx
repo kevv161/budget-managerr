@@ -93,7 +93,7 @@ export default function Login() {
             )}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {/* Email Field */}
             <div>
               <label htmlFor="email" style={{ display: "block", fontSize: "0.9rem", fontWeight: "500", color: "var(--text-color)", marginBottom: "8px" }}>
@@ -157,7 +157,6 @@ export default function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              onClick={handleSubmit}
               disabled={isLoading}
               style={{ 
                 width: "100%", 
@@ -205,7 +204,7 @@ export default function Login() {
                 "Iniciar Sesión"
               )}
             </button>
-          </div>
+          </form>
 
           {/* Divider */}
           <div className="my-6">
