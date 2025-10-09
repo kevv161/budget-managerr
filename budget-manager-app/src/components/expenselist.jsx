@@ -1,7 +1,11 @@
+import { useContext } from 'react';
 import { getCategoryIcon, getCategoryName } from '../config/categories';
 import { convertCurrency, formatCurrency } from '../utils/currencyConverter';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const ExpenseList = ({ expenses, onDeleteExpense, selectedCurrency }) => {
+  const { theme } = useContext(ThemeContext);
+  
   // Convert amount to selected currency
   const formatAmount = (amount) => {
     if (selectedCurrency === 'GTQ') return `Q${amount.toFixed(2)}`;
@@ -11,7 +15,7 @@ const ExpenseList = ({ expenses, onDeleteExpense, selectedCurrency }) => {
 
   if (expenses.length === 0) {
     return (
-      <div className="expense-list-container">
+      <div className={`expense-list-container ${theme === 'dark' ? 'dark-theme' : ''}`}>
         <h2>Gastos</h2>
         <p className="no-expenses">No hay gastos registrados</p>
       </div>
@@ -19,7 +23,7 @@ const ExpenseList = ({ expenses, onDeleteExpense, selectedCurrency }) => {
   }
 
   return (
-    <div className="expense-list-container">
+    <div className={`expense-list-container ${theme === 'dark' ? 'dark-theme' : ''}`}>
       <div className="list-header">
         <h2>Gastos</h2>
         <div className="expense-count">

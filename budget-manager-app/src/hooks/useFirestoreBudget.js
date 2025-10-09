@@ -45,6 +45,10 @@ export const useFirestoreBudget = () => {
   // Escuchar cambios en el presupuesto y gastos del usuario
   useEffect(() => {
     if (!currentUser) {
+      setBudgets([]);
+      setExpenses([]);
+      setBudget(0);
+      setBudgetSet(false);
       setLoading(false);
       return;
     }
@@ -62,10 +66,9 @@ export const useFirestoreBudget = () => {
 
     const setupListeners = async () => {
       try {
-        // Probar conexión a Firestore
-        const isConnected = await testFirestoreConnection();
-        if (!isConnected) {
-          console.error('No se pudo conectar a Firestore');
+        // Solo probar conexión si el usuario está autenticado
+        if (!currentUser.uid) {
+          console.warn('Usuario no tiene UID válido');
           setLoading(false);
           return;
         }
@@ -149,7 +152,10 @@ export const useFirestoreBudget = () => {
 
   // Crear o actualizar presupuesto para múltiples meses
   const setBudgetAmount = async (amount, months = null) => {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.uid) {
+      console.warn('Usuario no autenticado o sin UID válido');
+      return;
+    }
 
     try {
       // Si no se especifican meses, usar los próximos 4 meses (actual + 3 futuros)
@@ -189,7 +195,10 @@ export const useFirestoreBudget = () => {
 
   // Agregar gasto
   const addExpense = async (expenseData) => {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.uid) {
+      console.warn('Usuario no autenticado o sin UID válido');
+      return;
+    }
 
     try {
       await addDoc(collection(db, 'users', currentUser.uid, 'expenses'), {
@@ -206,7 +215,10 @@ export const useFirestoreBudget = () => {
 
   // Eliminar gasto
   const deleteExpense = async (expenseId) => {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.uid) {
+      console.warn('Usuario no autenticado o sin UID válido');
+      return;
+    }
 
     try {
       await deleteDoc(doc(db, 'users', currentUser.uid, 'expenses', expenseId));
