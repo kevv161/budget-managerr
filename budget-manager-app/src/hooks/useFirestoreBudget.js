@@ -50,13 +50,6 @@ export const useFirestoreBudget = () => {
       setBudget(0);
       setBudgetSet(false);
       setLoading(false);
-      return; // Salir temprano si no hay usuario autenticado
-    }
-    
-    // Verificar que el usuario tenga un UID válido
-    if (!currentUser.uid) {
-      console.warn('Usuario autenticado pero sin UID válido');
-      setLoading(false);
       return;
     }
 
@@ -160,7 +153,7 @@ export const useFirestoreBudget = () => {
   // Crear o actualizar presupuesto para múltiples meses
   const setBudgetAmount = async (amount, months = null) => {
     if (!currentUser || !currentUser.uid) {
-      console.warn('No se puede establecer el presupuesto: usuario no autenticado');
+      console.warn('Usuario no autenticado o sin UID válido');
       return;
     }
 
