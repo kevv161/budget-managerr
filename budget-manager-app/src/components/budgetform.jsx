@@ -1,10 +1,8 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { format, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ThemeContext } from '../contexts/ThemeContext';
 
 const BudgetForm = ({ onBudgetSet }) => {
-  const { theme } = useContext(ThemeContext);
   const [budgetLimit, setBudgetLimit] = useState('');
 
   // Función para obtener los próximos 4 meses
@@ -33,26 +31,26 @@ const BudgetForm = ({ onBudgetSet }) => {
   const nextMonths = getNextMonths();
 
   return (
-    <div className={`budget-form-container ${theme === 'dark' ? 'dark-theme' : ''}`}>
+    <div className="budget-form-container">
       <h2>Establecer Presupuesto</h2>
-      <div className={`budget-info ${theme === 'dark' ? 'dark-info' : ''}`} style={{ 
-        backgroundColor: theme === 'dark' ? '#1e3a5f' : '#e3f2fd', 
-        border: theme === 'dark' ? '1px solid #3a5a85' : '1px solid #90caf9', 
+      <div style={{ 
+        backgroundColor: '#e3f2fd', 
+        border: '1px solid #90caf9', 
         borderRadius: '8px', 
         padding: '12px', 
         marginBottom: '16px' 
       }}>
-        <h4 style={{ margin: '0 0 8px 0', color: theme === 'dark' ? '#90caf9' : '#1565c0' }}>
+        <h4 style={{ margin: '0 0 8px 0', color: '#1565c0' }}>
           📅 Presupuestos que se crearán:
         </h4>
-        <ul style={{ margin: '0', paddingLeft: '20px', color: theme === 'dark' ? '#90caf9' : '#1565c0' }}>
+        <ul style={{ margin: '0', paddingLeft: '20px', color: '#1565c0' }}>
           {nextMonths.map((month, index) => (
             <li key={index}>
               {month} {index === 0 && '(Mes actual)'}
             </li>
           ))}
         </ul>
-        <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: theme === 'dark' ? '#90caf9' : '#1565c0' }}>
+        <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#1565c0' }}>
           Se establecerá el mismo monto para los próximos 4 meses
         </p>
       </div>

@@ -1,9 +1,6 @@
-import { useContext } from 'react';
 import { convertCurrency, formatCurrency, CURRENCIES } from '../utils/currencyConverter';
-import { ThemeContext } from '../contexts/ThemeContext';
 
 const BudgetSummary = ({ budget, expenses, savings, emergencyFund, remaining, selectedCurrency }) => {
-  const { theme } = useContext(ThemeContext);
   const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
   const percentSpent = budget > 0 ? (totalExpenses / budget) * 100 : 0;
   
@@ -27,7 +24,7 @@ const BudgetSummary = ({ budget, expenses, savings, emergencyFund, remaining, se
   }
 
   return (
-    <div className={`budget-summary ${theme === 'dark' ? 'dark-theme' : ''}`}>
+    <div className="budget-summary">
       <div className="summary-card budget">
         <div className="card-icon">💰</div>
         <div className="card-content">

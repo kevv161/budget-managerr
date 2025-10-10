@@ -1,10 +1,7 @@
-import { useContext } from 'react';
 import { useExport } from '../hooks/useExport';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
-import { ThemeContext } from '../contexts/ThemeContext';
 
 const ExportButton = ({ selectedCurrency }) => {
-	const { theme } = useContext(ThemeContext);
 	const { exportToExcel, exportToWord, exportToPDF } = useExport(selectedCurrency);
 	const { budget, expenses, totalExpenses, savings, emergencyFund, remaining } = useFirestoreBudget();
 
@@ -21,7 +18,7 @@ const ExportButton = ({ selectedCurrency }) => {
 	};
 
 	return (
-		<div className={`export-buttons ${theme === 'dark' ? 'dark-theme' : ''}`}>
+		<div className="export-buttons">
 			<div className="export-header">
 				<h3>Exportar Datos</h3>
 				<div className="export-info">

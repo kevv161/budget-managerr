@@ -50,13 +50,6 @@ export const useFirestoreBudget = () => {
       setBudget(0);
       setBudgetSet(false);
       setLoading(false);
-      return; // Salir temprano si no hay usuario autenticado
-    }
-    
-    // Verificar que el usuario tenga un UID válido
-    if (!currentUser.uid) {
-      console.warn('Usuario autenticado pero sin UID válido');
-      setLoading(false);
       return;
     }
 
@@ -73,9 +66,10 @@ export const useFirestoreBudget = () => {
 
     const setupListeners = async () => {
       try {
-        // Solo probar conexión si el usuario está autenticado
-        if (!currentUser.uid) {
-          console.warn('Usuario no tiene UID válido');
+        // Probar conexión a Firestore
+        const isConnected = await testFirestoreConnection();
+        if (!isConnected) {
+          console.error('No se pudo conectar a Firestore');
           setLoading(false);
           return;
         }
@@ -160,7 +154,7 @@ export const useFirestoreBudget = () => {
   // Crear o actualizar presupuesto para múltiples meses
   const setBudgetAmount = async (amount, months = null) => {
     if (!currentUser || !currentUser.uid) {
-      console.warn('No se puede establecer el presupuesto: usuario no autenticado');
+      console.warn('Usuario no autenticado o sin UID válido');
       return;
     }
 
@@ -202,10 +196,7 @@ export const useFirestoreBudget = () => {
 
   // Agregar gasto
   const addExpense = async (expenseData) => {
-    if (!currentUser || !currentUser.uid) {
-      console.warn('Usuario no autenticado o sin UID válido');
-      return;
-    }
+    if (!currentUser) return;
 
     try {
       await addDoc(collection(db, 'users', currentUser.uid, 'expenses'), {
@@ -222,10 +213,7 @@ export const useFirestoreBudget = () => {
 
   // Eliminar gasto
   const deleteExpense = async (expenseId) => {
-    if (!currentUser || !currentUser.uid) {
-      console.warn('Usuario no autenticado o sin UID válido');
-      return;
-    }
+    if (!currentUser) return;
 
     try {
       await deleteDoc(doc(db, 'users', currentUser.uid, 'expenses', expenseId));

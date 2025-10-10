@@ -1,7 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ThemeContext } from '../contexts/ThemeContext';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
 import { useCurrency } from '../hooks/useCurrency';
 import { useExport } from '../hooks/useExport';
@@ -14,7 +13,6 @@ import 'ldrs/react/DotSpinner.css'
 function BudgetHistory() {
 	const navigate = useNavigate();
 	const { logout } = useAuth();
-	const { theme, toggleTheme } = useContext(ThemeContext);
 	const {
 		budgets,
 		expenses,
@@ -237,16 +235,16 @@ function BudgetHistory() {
 				<DotSpinner
 					size="40"
 					speed="0.9"
-					color={theme === 'dark' ? 'white' : 'black'} 
+					color="black" 
 				/>
-				<p style={{ color: theme === 'dark' ? '#e0e0e0' : 'black' }}>Cargando historial de presupuestos...</p>
+				<p>Cargando historial de presupuestos...</p>
 			</div>
 		);
 	}
 
 	return (
 		<>
-			<div className={`budget-history-container ${theme === 'dark' ? 'dark-theme' : ''}`} style={{ maxWidth: '1100px', margin: '0 auto', padding: '20px 16px' }}>
+			<div style={{ maxWidth: '1100px', margin: '0 auto', padding: '20px 16px' }}>
 				<header className="app-header home-header">
 					<div className="header-content">
 						<div className="header-info">
@@ -256,15 +254,6 @@ function BudgetHistory() {
 							</p>
 						</div>
 						<div className="header-actions">
-							<button 
-								className="btn-secondary btn-mobile theme-toggle" 
-								onClick={toggleTheme}
-								title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-								style={{ marginRight: '8px' }}
-							>
-								<span className="btn-text">{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
-								<span className="btn-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
-							</button>
 							<button 
 								className="btn-secondary btn-mobile" 
 								onClick={() => navigate('/home')}
@@ -364,17 +353,17 @@ function BudgetHistory() {
 
 					{/* Simulación de mes para pruebas */}
 					<div style={{ 
-						backgroundColor: theme === 'dark' ? '#2d2412' : '#fff3cd', 
-						border: theme === 'dark' ? '1px solid #5c4a1a' : '1px solid #ffeaa7', 
+						backgroundColor: '#fff3cd', 
+						border: '1px solid #ffeaa7', 
 						borderRadius: '8px', 
 						padding: '16px', 
 						marginBottom: '20px' 
 					}}>
-						<h4 style={{ margin: '0 0 12px 0', color: theme === 'dark' ? '#ffcc80' : '#856404' }}>
+						<h4 style={{ margin: '0 0 12px 0', color: '#856404' }}>
 							🧪 Simulación de Mes (Para Pruebas)
 						</h4>
 						<div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-							<label htmlFor="simulation-month" style={{ fontWeight: 'bold', color: theme === 'dark' ? '#ffcc80' : '#856404' }}>
+							<label htmlFor="simulation-month" style={{ fontWeight: 'bold', color: '#856404' }}>
 								Simular mes actual:
 							</label>
 							<select
@@ -383,9 +372,7 @@ function BudgetHistory() {
 								onChange={(e) => handleSimulateMonth(e.target.value || null)}
 								style={{
 									padding: '6px 10px',
-									border: theme === 'dark' ? '1px solid #555' : '1px solid #ddd',
-									backgroundColor: theme === 'dark' ? '#333' : '#fff',
-									color: theme === 'dark' ? '#e0e0e0' : '#000',
+									border: '1px solid #ddd',
 									borderRadius: '4px',
 									fontSize: '14px',
 									minWidth: '180px'
@@ -440,26 +427,25 @@ function BudgetHistory() {
 								return (
 									<div 
 										key={budget.id}
-										className={`history-card ${theme === 'dark' ? 'dark-theme' : ''}`}
 										style={{
-											backgroundColor: theme === 'dark' ? '#2a2a2a' : 'white',
-											border: isCurrentMonth ? '2px solid #2196f3' : theme === 'dark' ? '1px solid #444' : '1px solid #ddd',
+											backgroundColor: 'white',
+											border: isCurrentMonth ? '2px solid #2196f3' : '1px solid #ddd',
 											borderRadius: '8px',
 											padding: '20px',
-											boxShadow: theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)'
+											boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
 										}}
 									>
 										<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
 											<div>
-												<h3 style={{ margin: '0 0 4px 0', color: theme === 'dark' ? '#e0e0e0' : '#333' }}>
+												<h3 style={{ margin: '0 0 4px 0', color: '#333' }}>
 													{formatMonthName(budget.monthKey)}
 													{isCurrentMonth && <span style={{ marginLeft: '8px', fontSize: '14px', color: '#2196f3' }}>(Mes actual)</span>}
 												</h3>
 												{editingBudget?.id === budget.id ? (
 													<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
 														<div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-															<span style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#666' }}>Nuevo presupuesto:</span>
-															<span style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#666' }}>{getCurrencyName(selectedCurrency)}</span>
+															<span style={{ fontSize: '14px', color: '#666' }}>Nuevo presupuesto:</span>
+															<span style={{ fontSize: '14px', color: '#666' }}>{getCurrencyName(selectedCurrency)}</span>
 															<input
 																type="number"
 																value={editAmount}
@@ -505,7 +491,7 @@ function BudgetHistory() {
 														</button>
 													</div>
 												) : (
-													<p style={{ margin: '0', color: theme === 'dark' ? '#a0a0a0' : '#666', fontSize: '14px' }}>
+													<p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
 														Presupuesto: {getCurrencyName(selectedCurrency)} {budget.amount.toLocaleString()}
 													</p>
 												)}
@@ -570,7 +556,7 @@ function BudgetHistory() {
 												<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f44336' }}>
 													{getCurrencyName(selectedCurrency)} {stats.totalExpenses.toLocaleString()}
 												</div>
-												<div style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#666' }}>
+												<div style={{ fontSize: '14px', color: '#666' }}>
 													Gastos ({stats.expenseCount})
 												</div>
 											</div>
@@ -582,7 +568,7 @@ function BudgetHistory() {
 												}}>
 													{getCurrencyName(selectedCurrency)} {stats.remaining.toLocaleString()}
 												</div>
-												<div style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#666' }}>
+												<div style={{ fontSize: '14px', color: '#666' }}>
 													Restante
 												</div>
 											</div>
@@ -590,7 +576,7 @@ function BudgetHistory() {
 												<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2196f3' }}>
 													{getCurrencyName(selectedCurrency)} {stats.emergencyFund.toLocaleString()}
 												</div>
-												<div style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#666' }}>
+												<div style={{ fontSize: '14px', color: '#666' }}>
 													Fondo de emergencia
 												</div>
 											</div>
@@ -598,7 +584,7 @@ function BudgetHistory() {
 												<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#9c27b0' }}>
 													{getCurrencyName(selectedCurrency)} {stats.savings.toLocaleString()}
 												</div>
-												<div style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#666' }}>
+												<div style={{ fontSize: '14px', color: '#666' }}>
 													Ahorros
 												</div>
 											</div>

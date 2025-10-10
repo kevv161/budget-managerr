@@ -1,10 +1,8 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { CATEGORIES, getCategoryIsFixed } from '../config/categories';
 import { CURRENCIES } from '../utils/currencyConverter';
-import { ThemeContext } from '../contexts/ThemeContext';
 
 const ExpenseForm = ({ onExpenseAdd, selectedCurrency }) => {
-  const { theme } = useContext(ThemeContext);
   const [expense, setExpense] = useState({
     description: '',
     amount: '',
@@ -53,7 +51,7 @@ const ExpenseForm = ({ onExpenseAdd, selectedCurrency }) => {
   };
 
   return (
-    <div className={`expense-form-container ${theme === 'dark' ? 'dark-theme' : ''}`}>
+    <div className="expense-form-container">
       <div className="form-header">
         <h2>Agregar Gasto</h2>
         <div className="form-icon">➕</div>

@@ -1,7 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ThemeContext } from '../contexts/ThemeContext';
 import BudgetForm from '../components/budgetform.jsx';
 import ExpenseForm from '../components/expenseform.jsx';
 import BudgetSummary from '../components/budgetsummary.jsx';
@@ -18,7 +17,6 @@ function Home() {
   const [showBudgetForm, setShowBudgetForm] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { theme, toggleTheme } = useContext(ThemeContext);
   const {
     budget,
     expenses,
@@ -122,14 +120,6 @@ function Home() {
               </p>
             </div>
             <div className="header-actions">
-              <button 
-                className="btn-secondary btn-mobile theme-toggle" 
-                onClick={toggleTheme}
-                title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-              >
-                <span className="btn-text">{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
-                <span className="btn-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
-              </button>
               <button 
                 className="btn-secondary btn-mobile" 
                 onClick={handleLogout}

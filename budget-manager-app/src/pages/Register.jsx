@@ -1,10 +1,8 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ThemeContext } from '../contexts/ThemeContext';
 
 function Register() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -43,8 +41,8 @@ function Register() {
   };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'dark-theme' : ''}`} style={{ 
-        backgroundColor: theme === 'dark' ? "#121212" : "#f0f2f5", 
+    <div className="min-h-screen" style={{ 
+        backgroundColor: "#f0f2f5", 
         display: "flex", 
         alignItems: "center", 
         justifyContent: "center", 
@@ -58,30 +56,7 @@ function Register() {
       }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "30px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            <div></div>
-            <h1 style={{ fontSize: "2.5em", color: "var(--primary-color)", margin: "0" }}>Budget Manager</h1>
-            <button 
-              onClick={toggleTheme}
-              style={{
-                backgroundColor: theme === 'dark' ? '#444' : '#f0f0f0',
-                color: theme === 'dark' ? '#e0e0e0' : '#333',
-                border: theme === 'dark' ? '1px solid #555' : '1px solid #ddd',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.3s ease'
-              }}
-              title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-            >
-              <span>{theme === 'light' ? '🌙' : '☀️'}</span>
-              <span>{theme === 'light' ? 'Oscuro' : 'Claro'}</span>
-            </button>
-          </div>
+          <h1 style={{ fontSize: "2.5em", color: "var(--primary-color)", marginBottom: "10px" }}>Budget Manager</h1>
           <div style={{ 
             display: "inline-block", 
             backgroundColor: "var(--accent-color)", 
@@ -95,18 +70,18 @@ function Register() {
         </div>
 
         {/* Register Card */}
-        <div className={`register-card ${theme === 'dark' ? 'dark-theme' : ''}`} style={{ 
-          backgroundColor: theme === 'dark' ? "#1e1e1e" : "white", 
+        <div style={{ 
+          backgroundColor: "white", 
           borderRadius: "12px", 
           padding: "35px",
-          boxShadow: theme === 'dark' ? "0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)" : "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)",
           margin: "0 15px"
         }}>
           <div style={{ textAlign: "center", marginBottom: "25px" }}>
             <h2 style={{ fontSize: "1.8rem", fontWeight: "600", color: "var(--text-color)", marginBottom: "10px" }}>
               Crear Cuenta
             </h2>
-            <p style={{ color: theme === 'dark' ? "#a0a0a0" : "#666" }}>
+            <p style={{ color: "#666" }}>
               Completa el formulario para registrarte
             </p>
             
@@ -140,12 +115,10 @@ function Register() {
                 style={{ 
                   width: "100%", 
                   padding: "12px 15px", 
-                  border: theme === 'dark' ? "1px solid #555" : "1px solid #ddd", 
+                  border: "1px solid #ddd", 
                   borderRadius: "var(--border-radius)", 
                   outline: "none",
-                  transition: "all 0.3s ease",
-                  backgroundColor: theme === 'dark' ? "#333" : "white",
-                  color: theme === 'dark' ? "#e0e0e0" : "black"
+                  transition: "all 0.3s ease"
                 }}
                 placeholder="Tu nombre completo"
                 required
@@ -165,12 +138,10 @@ function Register() {
                 style={{ 
                   width: "100%", 
                   padding: "12px 15px", 
-                  border: theme === 'dark' ? "1px solid #555" : "1px solid #ddd", 
+                  border: "1px solid #ddd", 
                   borderRadius: "var(--border-radius)", 
                   outline: "none",
-                  transition: "all 0.3s ease",
-                  backgroundColor: theme === 'dark' ? "#333" : "white",
-                  color: theme === 'dark' ? "#e0e0e0" : "black"
+                  transition: "all 0.3s ease"
                 }}
                 placeholder="tu@email.com"
                 required
@@ -190,12 +161,10 @@ function Register() {
                 style={{ 
                   width: "100%", 
                   padding: "12px 15px", 
-                  border: theme === 'dark' ? "1px solid #555" : "1px solid #ddd", 
+                  border: "1px solid #ddd", 
                   borderRadius: "var(--border-radius)", 
                   outline: "none",
-                  transition: "all 0.3s ease",
-                  backgroundColor: theme === 'dark' ? "#333" : "white",
-                  color: theme === 'dark' ? "#e0e0e0" : "black"
+                  transition: "all 0.3s ease"
                 }}
                 placeholder="••••••••"
                 required
