@@ -45,10 +45,6 @@ export const useFirestoreBudget = () => {
   // Escuchar cambios en el presupuesto y gastos del usuario
   useEffect(() => {
     if (!currentUser) {
-      setBudgets([]);
-      setExpenses([]);
-      setBudget(0);
-      setBudgetSet(false);
       setLoading(false);
       return;
     }
@@ -153,10 +149,7 @@ export const useFirestoreBudget = () => {
 
   // Crear o actualizar presupuesto para múltiples meses
   const setBudgetAmount = async (amount, months = null) => {
-    if (!currentUser || !currentUser.uid) {
-      console.warn('Usuario no autenticado o sin UID válido');
-      return;
-    }
+    if (!currentUser) return;
 
     try {
       // Si no se especifican meses, usar los próximos 4 meses (actual + 3 futuros)
