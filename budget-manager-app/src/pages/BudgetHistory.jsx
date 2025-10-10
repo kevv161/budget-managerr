@@ -297,7 +297,9 @@ function BudgetHistory() {
 							onChange={(e) => setSelectedMonth(e.target.value)}
 							style={{
 								padding: '8px 12px',
-								border: '1px solid #ddd',
+								border: `1px solid ${theme === 'dark' ? '#4a5568' : '#ddd'}`,
+								backgroundColor: theme === 'dark' ? '#2d3748' : 'white',
+								color: theme === 'dark' ? '#e2e8f0' : 'inherit',
 								borderRadius: '4px',
 								fontSize: '16px',
 								minWidth: '200px'
@@ -329,7 +331,14 @@ function BudgetHistory() {
 
 					{/* Comparativa de gráficas: Presupuesto vs Gastos por mes */}
 					{showCharts && (
-						<div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+						<div style={{ 
+							backgroundColor: theme === 'dark' ? '#2d3748' : 'white', 
+							border: `1px solid ${theme === 'dark' ? '#4a5568' : '#ddd'}`, 
+							borderRadius: '8px', 
+							padding: '16px', 
+							marginBottom: '20px',
+							color: theme === 'dark' ? '#e2e8f0' : 'inherit'
+						}}>
 							<h3 style={{ margin: '0 0 12px 0' }}>Comparativa mensual: Presupuesto vs Gastos</h3>
 							<div style={{ width: '100%', height: 360 }}>
 								<ResponsiveContainer width="100%" height="100%">
@@ -337,13 +346,16 @@ function BudgetHistory() {
 										data={(selectedMonth ? buildMonthlyComparisonData().filter(d => d.monthKey === selectedMonth) : buildMonthlyComparisonData())}
 										margin={{ top: 16, right: 24, left: 8, bottom: 8 }}
 									>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="mes" />
-										<YAxis />
-										<Tooltip formatter={(value) => [`${getCurrencyName(selectedCurrency)} ${Number(value).toLocaleString()}`, '']} />
-										<Legend />
-										<Bar dataKey="presupuesto" name="Presupuesto" fill="#8884d8" />
-										<Bar dataKey="gasto" name="Gasto" fill="#82ca9d" />
+										<CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#4a5568' : '#ccc'} />
+										<XAxis dataKey="mes" stroke={theme === 'dark' ? '#e2e8f0' : '#666'} />
+										<YAxis stroke={theme === 'dark' ? '#e2e8f0' : '#666'} />
+										<Tooltip 
+											formatter={(value) => [`${getCurrencyName(selectedCurrency)} ${Number(value).toLocaleString()}`, '']}
+											contentStyle={{ backgroundColor: theme === 'dark' ? '#1a202c' : 'white', border: `1px solid ${theme === 'dark' ? '#4a5568' : '#ccc'}`, color: theme === 'dark' ? '#e2e8f0' : 'black' }}
+										/>
+										<Legend wrapperStyle={{ color: theme === 'dark' ? '#e2e8f0' : 'black' }} />
+										<Bar dataKey="presupuesto" name="Presupuesto" fill={theme === 'dark' ? '#9f7aea' : '#8884d8'} />
+										<Bar dataKey="gasto" name="Gasto" fill={theme === 'dark' ? '#68d391' : '#82ca9d'} />
 									</BarChart>
 								</ResponsiveContainer>
 							</div>
