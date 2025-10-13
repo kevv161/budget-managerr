@@ -54,6 +54,14 @@ function AppRoutes() {
         } 
       />
       <Route 
+        path="/history" 
+        element={
+          <ProtectedRoute>
+            <BudgetHistory />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
         path="/login" 
         element={currentUser ? <Navigate to="/home" /> : <Login />} 
       />

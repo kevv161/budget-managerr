@@ -3,10 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useFirestoreBudget } from '../hooks/useFirestoreBudget';
 import { useCurrency } from '../hooks/useCurrency';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { DotSpinner } from 'ldrs/react'
-import 'ldrs/react/DotSpinner.css'
+import { DotSpinner } from 'ldrs/react';
+import 'ldrs/react/DotSpinner.css';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend 
+} from 'recharts';
 
 function BudgetHistory() {
 	const navigate = useNavigate();
@@ -28,6 +38,9 @@ function BudgetHistory() {
 	const [selectedMonth, setSelectedMonth] = useState('');
 	const [editingBudget, setEditingBudget] = useState(null);
 	const [editAmount, setEditAmount] = useState('');
+	const [showCharts, setShowCharts] = useState(false);
+	const [simulatedCurrentMonth, setSimulatedCurrentMonth] = useState(null);
+	const [theme, setTheme] = useState('light');
 
 	// Filtrar presupuestos por mes seleccionado
 	useEffect(() => {
@@ -98,6 +111,52 @@ function BudgetHistory() {
 		if (stats.remaining < 0) return { status: 'over-budget', color: '#f44336', text: 'Sobre presupuesto' };
 		if (stats.remaining < stats.emergencyFund) return { status: 'low', color: '#ff9800', text: 'Presupuesto bajo' };
 		return { status: 'good', color: '#4caf50', text: 'En buen estado' };
+	};
+	
+	// Función para construir datos para la gráfica de comparación
+	const buildMonthlyComparisonData = () => {
+		return budgets.map(budget => {
+			const monthExpenses = getExpensesForMonth(budget.monthKey);
+			const totalExpenses = monthExpenses.reduce((total, expense) => total + (expense.amount || 0), 0);
+			
+			return {
+				monthKey: budget.monthKey,
+				mes: formatMonthName(budget.monthKey),
+				presupuesto: budget.amount,
+				gasto: totalExpenses
+			};
+		}).sort((a, b) => a.monthKey.localeCompare(b.monthKey));
+	};
+	
+	// Función para manejar la simulación de mes
+	const handleSimulateMonth = (monthKey) => {
+		setSimulatedCurrentMonth(monthKey);
+	};
+	
+	// Función para resetear la simulación
+	const handleResetSimulation = () => {
+		setSimulatedCurrentMonth(null);
+	};
+	
+	// Función para obtener opciones de simulación
+	const getSimulationOptions = () => {
+		const now = new Date();
+		const options = [];
+		
+		// Agregar 6 meses anteriores y 6 meses futuros
+		for (let i = -6; i <= 6; i++) {
+			if (i === 0) continue; // Saltar el mes actual
+			
+			const date = i < 0 ? subMonths(now, Math.abs(i)) : addMonths(now, i);
+			const monthKey = format(date, 'yyyy-MM');
+			
+			options.push({
+				value: monthKey,
+				label: format(date, 'MMMM yyyy', { locale: es })
+			});
+		}
+		
+		return options.sort((a, b) => a.value.localeCompare(b.value));
 	};
 
 	// Función para iniciar la edición de un presupuesto
