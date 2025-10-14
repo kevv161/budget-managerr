@@ -7,6 +7,7 @@ import { format, parseISO, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { DotSpinner } from 'ldrs/react';
 import 'ldrs/react/DotSpinner.css';
+import { CATEGORIES, getCategoryName } from '../config/categories';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -39,8 +40,19 @@ function BudgetHistory() {
 	const [editingBudget, setEditingBudget] = useState(null);
 	const [editAmount, setEditAmount] = useState('');
 	const [showCharts, setShowCharts] = useState(false);
+	const [showExpenseComparison, setShowExpenseComparison] = useState(false);
 	const [simulatedCurrentMonth, setSimulatedCurrentMonth] = useState(null);
 	const [theme, setTheme] = useState('light');
+
+	// Colores por categoría para la gráfica de comparación de gastos
+	const categoryColors = {
+		streaming: '#7cb5ec',
+		compras: '#f7a35c',
+		agua: '#90ed7d',
+		internet: '#8085e9',
+		luz: '#f45b5b',
+		otros: '#434348'
+	};
 
 	// Filtrar presupuestos por mes seleccionado
 	useEffect(() => {
@@ -127,7 +139,7 @@ function BudgetHistory() {
 			};
 		}).sort((a, b) => a.monthKey.localeCompare(b.monthKey));
 	};
-	
+
 	// Función para manejar la simulación de mes
 	const handleSimulateMonth = (monthKey) => {
 		setSimulatedCurrentMonth(monthKey);
@@ -136,6 +148,51 @@ function BudgetHistory() {
 	// Función para resetear la simulación
 	const handleResetSimulation = () => {
 		setSimulatedCurrentMonth(null);
+	};
+
+	// Mes efectivo (considera simulación y filtro si existe)
+	const getEffectiveCurrentMonthKey = () => {
+		return simulatedCurrentMonth || selectedMonth || getCurrentMonthKey();
+	};
+
+	// Construir datos de comparación de gastos por categorías entre mes anterior y actual
+	const buildExpenseComparisonData = () => {
+		const effectiveMonthKey = getEffectiveCurrentMonthKey();
+		if (!effectiveMonthKey) return [];
+
+		const currentDate = parseISO(`${effectiveMonthKey}-01`);
+		const previousDate = subMonths(currentDate, 1);
+		const previousMonthKey = format(previousDate, 'yyyy-MM');
+
+		// Sumatoria por categoría para un mes dado
+		const sumByCategory = (monthKey) => {
+			const monthExpenses = getExpensesForMonth(monthKey);
+			const totals = {};
+			CATEGORIES.forEach(cat => { totals[cat.id] = 0; });
+			monthExpenses.forEach(exp => {
+				const catId = exp.category || 'otros';
+				const amount = exp.amount || 0;
+				if (totals[catId] == null) totals[catId] = 0; // seguridad si entra una categoría nueva
+				totals[catId] += amount;
+			});
+			return totals;
+		};
+
+		const prevTotals = sumByCategory(previousMonthKey);
+		const currTotals = sumByCategory(effectiveMonthKey);
+
+		const prevLabel = `${formatMonthName(previousMonthKey)} (Anterior)`;
+		const currLabel = `${formatMonthName(effectiveMonthKey)} (Actual)`;
+
+		const prevItem = { mes: prevLabel, monthKey: previousMonthKey };
+		const currItem = { mes: currLabel, monthKey: effectiveMonthKey };
+
+		CATEGORIES.forEach(cat => {
+			prevItem[cat.id] = prevTotals[cat.id] || 0;
+			currItem[cat.id] = currTotals[cat.id] || 0;
+		});
+
+		return [prevItem, currItem];
 	};
 	
 	// Función para obtener opciones de simulación
@@ -280,45 +337,85 @@ function BudgetHistory() {
 								</option>
 							))}
 						</select>
-						<button
-							onClick={() => setShowCharts(prev => !prev)}
-							style={{
-								marginLeft: '12px',
-								backgroundColor: showCharts ? '#6c757d' : '#2196f3',
-								color: 'white',
-								border: 'none',
-								padding: '8px 12px',
-								borderRadius: '4px',
-								fontSize: '14px',
-								cursor: 'pointer'
-							}}
-						>
-							{showCharts ? 'Ocultar gráficas' : 'Mostrar gráficas'}
-						</button>
-					</div>
+					<button
+						onClick={() => setShowCharts(prev => !prev)}
+						style={{
+							marginLeft: '12px',
+							backgroundColor: showCharts ? '#6c757d' : '#2196f3',
+							color: 'white',
+							border: 'none',
+							padding: '8px 12px',
+							borderRadius: '4px',
+							fontSize: '14px',
+							cursor: 'pointer'
+						}}
+					>
+						{showCharts ? 'Ocultar gráficas' : 'Mostrar gráficas'}
+					</button>
+					<button
+						onClick={() => setShowExpenseComparison(prev => !prev)}
+						style={{
+							marginLeft: '8px',
+							backgroundColor: showExpenseComparison ? '#6c757d' : '#8e44ad',
+							color: 'white',
+							border: 'none',
+							padding: '8px 12px',
+							borderRadius: '4px',
+							fontSize: '14px',
+							cursor: 'pointer'
+						}}
+					>
+						{showExpenseComparison ? 'Ocultar comparación de gastos' : 'Comparación de gastos'}
+					</button>
+				</div>
 
 					{/* Comparativa de gráficas: Presupuesto vs Gastos por mes */}
-					{showCharts && (
-						<div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
-							<h3 style={{ margin: '0 0 12px 0' }}>Comparativa mensual: Presupuesto vs Gastos</h3>
-							<div style={{ width: '100%', height: 360 }}>
-								<ResponsiveContainer width="100%" height="100%">
-									<BarChart
-										data={(selectedMonth ? buildMonthlyComparisonData().filter(d => d.monthKey === selectedMonth) : buildMonthlyComparisonData())}
-										margin={{ top: 16, right: 24, left: 8, bottom: 8 }}
-									>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="mes" />
-										<YAxis />
-										<Tooltip formatter={(value) => [`${getCurrencyName(selectedCurrency)} ${Number(value).toLocaleString()}`, '']} />
-										<Legend />
-										<Bar dataKey="presupuesto" name="Presupuesto" fill="#8884d8" />
-										<Bar dataKey="gasto" name="Gasto" fill="#82ca9d" />
-									</BarChart>
-								</ResponsiveContainer>
-							</div>
+				{showCharts && (
+					<div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+						<h3 style={{ margin: '0 0 12px 0' }}>Comparativa mensual: Presupuesto vs Gastos</h3>
+						<div style={{ width: '100%', height: 360 }}>
+							<ResponsiveContainer width="100%" height="100%">
+								<BarChart
+									data={(selectedMonth ? buildMonthlyComparisonData().filter(d => d.monthKey === selectedMonth) : buildMonthlyComparisonData())}
+									margin={{ top: 16, right: 24, left: 8, bottom: 8 }}
+								>
+									<CartesianGrid strokeDasharray="3 3" />
+									<XAxis dataKey="mes" />
+									<YAxis />
+									<Tooltip formatter={(value) => [`${getCurrencyName(selectedCurrency)} ${Number(value).toLocaleString()}`, '']} />
+									<Legend />
+									<Bar dataKey="presupuesto" name="Presupuesto" fill="#8884d8" />
+									<Bar dataKey="gasto" name="Gasto" fill="#82ca9d" />
+								</BarChart>
+							</ResponsiveContainer>
 						</div>
-					)}
+					</div>
+				)}
+
+				{/* Comparación de gastos por categorías: mes anterior vs actual */}
+				{showExpenseComparison && (
+					<div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+						<h3 style={{ margin: '0 0 12px 0' }}>Comparación de gastos por categorías</h3>
+						<p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#555' }}>
+							Se comparan el mes anterior y el mes actual. Cada barra agrupa categorías por color.
+						</p>
+						<div style={{ width: '100%', height: 380 }}>
+							<ResponsiveContainer width="100%" height="100%">
+								<BarChart data={buildExpenseComparisonData()} margin={{ top: 16, right: 24, left: 8, bottom: 8 }}>
+									<CartesianGrid strokeDasharray="3 3" />
+									<XAxis dataKey="mes" />
+									<YAxis />
+									{/* Mostrar el nombre de la categoría tal cual en el tooltip y en la leyenda */}
+									<Tooltip formatter={(value, name) => [`${getCurrencyName(selectedCurrency)} ${Number(value).toLocaleString()}`, name]} />
+									<Legend />
+									{CATEGORIES.map(cat => (
+										<Bar key={cat.id} dataKey={cat.id} name={getCategoryName(cat.id)} stackId="gastos" fill={categoryColors[cat.id] || '#888888'} />
+									))}
+								</BarChart>
+							</ResponsiveContainer>
+						</div>
+					</div>
+				)}
 
 					{/* Simulación de mes para pruebas */}
 					<div style={{ 
