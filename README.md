@@ -156,15 +156,7 @@
   ```bash
   firebase deploy --only hosting
   ```
-
-**Soporte Técnico**
-- Email de soporte (personalizar): `soporte@tu-dominio.com`
-- Horario de atención (personalizar): `L-V 9:00–18:00 (GMT-6)`
-- Incluir en su organización:
-  - En la app: un enlace “Ayuda/Soporte” en la cabecera o pie.
-  - En los archivos: sección “Contacto” en `README.md`.
-  - Opcional: formulario de contacto o chatbot.
-
+  
 **Recomendaciones**
 - Configurar variables de entorno (`.env`) para credenciales de Firebase (con prefijo `VITE_`) y evitar hardcode:
   - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`.
